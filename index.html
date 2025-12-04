@@ -121,6 +121,18 @@
         </div>
     </footer>
 
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-loading" id="modalLoading">
+                <div class="spinner"></div>
+                <p>Memuat detail...</p>
+            </div>
+            <div class="modal-content" id="modalContent"></div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>

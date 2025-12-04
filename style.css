@@ -479,3 +479,416 @@ body {
 .empty-state p {
     color: #666;
 }
+
+/* Vacancy Card Clickable */
+.vacancy-card {
+    cursor: pointer;
+}
+
+.vacancy-card:active {
+    transform: scale(0.99);
+}
+
+.btn-detail {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-detail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    background: white;
+    border-radius: 20px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+.modal-loading {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.modal-content {
+    padding: 30px;
+}
+
+/* Modal Detail Styles */
+.detail-header {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.detail-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.detail-company {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.company-logo {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.company-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.company-info h3 {
+    font-size: 1.2rem;
+    color: #667eea;
+    margin-bottom: 5px;
+}
+
+.company-info p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.detail-badges {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.detail-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.detail-badge.status {
+    background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+    color: white;
+}
+
+.detail-badge.status.closed {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.detail-badge.angkatan {
+    background: #e8f4fd;
+    color: #2980b9;
+}
+
+/* Detail Sections */
+.detail-section {
+    margin-bottom: 25px;
+}
+
+.detail-section h4 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-section h4 .icon {
+    font-size: 1.2rem;
+}
+
+.detail-box {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.detail-box p {
+    color: #555;
+    line-height: 1.8;
+    white-space: pre-line;
+}
+
+/* Info Grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.info-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+}
+
+.info-card .icon {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.info-card .value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #667eea;
+    display: block;
+}
+
+.info-card .label {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 3px;
+}
+
+/* Tags in Detail */
+.detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.detail-tag {
+    background: #e8f4fd;
+    color: #2980b9;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.detail-tag.jenjang {
+    background: #fef3e2;
+    color: #e67e22;
+}
+
+/* Timeline */
+.timeline {
+    display: grid;
+    gap: 15px;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+}
+
+.timeline-item.active {
+    background: #e8f4fd;
+    border-left-color: #00b894;
+}
+
+.timeline-item.past {
+    opacity: 0.6;
+}
+
+.timeline-icon {
+    width: 40px;
+    height: 40px;
+    background: #667eea;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.timeline-item.active .timeline-icon {
+    background: #00b894;
+}
+
+.timeline-content h5 {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.timeline-content p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Company Address */
+.address-box {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.address-box .icon {
+    font-size: 2rem;
+    color: #667eea;
+}
+
+.address-box .address-text {
+    flex: 1;
+}
+
+.address-box .address-text p {
+    color: #555;
+    line-height: 1.6;
+}
+
+.address-box .address-text .location {
+    margin-top: 10px;
+    font-weight: 600;
+    color: #667eea;
+}
+
+/* Apply Button */
+.apply-section {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 2px solid #f0f0f0;
+    text-align: center;
+}
+
+.btn-apply {
+    display: inline-block;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.btn-apply:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 184, 148, 0.4);
+}
+
+.btn-apply.disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-apply.disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+    .modal {
+        border-radius: 15px;
+        margin: 10px;
+    }
+    
+    .modal-content {
+        padding: 20px;
+    }
+    
+    .detail-title {
+        font-size: 1.4rem;
+    }
+    
+    .detail-company {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .timeline-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

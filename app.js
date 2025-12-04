@@ -1,5 +1,6 @@
 // API Configuration
 const API_BASE_URL = 'https://maganghub.kemnaker.go.id/be/v1/api/list/vacancies-aktif';
+const API_DETAIL_URL = 'https://maganghub.kemnaker.go.id/be/v1/api/read/vacancies-aktif';
 
 // State
 let currentPage = 1;
@@ -89,7 +90,7 @@ function createVacancyCard(vacancy) {
     const isOpen = isRegistrationOpen(vacancy.jadwal);
     
     return `
-        <div class="vacancy-card">
+        <div class="vacancy-card" onclick="openDetail('${vacancy.id_posisi}')">
             <div class="vacancy-header">
                 <div>
                     <h3 class="vacancy-title">${escapeHtml(vacancy.posisi)}</h3>
@@ -111,7 +112,7 @@ function createVacancyCard(vacancy) {
             
             <div class="vacancy-description">
                 <h4>📋 Deskripsi Posisi:</h4>
-                <p>${escapeHtml(vacancy.deskripsi_posisi || 'Tidak ada deskripsi')}</p>
+                <p>${truncateText(escapeHtml(vacancy.deskripsi_posisi || 'Tidak ada deskripsi'), 200)}</p>
             </div>
             
             <div class="vacancy-tags">
@@ -141,6 +142,7 @@ function createVacancyCard(vacancy) {
                     <div>${formatDate(vacancy.jadwal?.tanggal_mulai)} - ${formatDate(vacancy.jadwal?.tanggal_selesai)}</div>
                 </div>
             </div>
+            <button class="btn-detail" onclick="event.stopPropagation(); openDetail('${vacancy.id_posisi}')">📄 Lihat Detail</button>
         </div>
     `;
 }
@@ -263,4 +265,204 @@ function showError() {
     errorElement.style.display = 'block';
     vacanciesContainer.innerHTML = '';
     paginationElement.innerHTML = '';
+}
+
+// Truncate Text
+function truncateText(text, maxLength) {
+    if (!text || text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+}
+
+// ============== DETAIL MODAL FUNCTIONS ==============
+
+// Open Detail Modal
+async function openDetail(id) {
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalLoading = document.getElementById('modalLoading');
+    const modalContent = document.getElementById('modalContent');
+    
+    modalOverlay.classList.add('active');
+    modalLoading.style.display = 'block';
+    modalContent.innerHTML = '';
+    document.body.style.overflow = 'hidden';
+    
+    try {
+        const response = await fetch(`${API_DETAIL_URL}/${id}?order_direction=ASC&page=1&limit=10&per_page=10`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch detail');
+        }
+        
+        const result = await response.json();
+        modalLoading.style.display = 'none';
+        modalContent.innerHTML = createDetailContent(result.data);
+    } catch (error) {
+        console.error('Error fetching detail:', error);
+        modalLoading.style.display = 'none';
+        modalContent.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">⚠️</div>
+                <h3>Gagal Memuat Detail</h3>
+                <p>Silakan coba lagi nanti</p>
+            </div>
+        `;
+    }
+}
+
+// Close Detail Modal
+function closeModal() {
+    const modalOverlay = document.getElementById('modalOverlay');
+    modalOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+
+// Create Detail Content
+function createDetailContent(data) {
+    const programStudi = parseJSON(data.program_studi, []);
+    const jenjang = parseJSON(data.jenjang, []);
+    const isOpen = isRegistrationOpen(data.jadwal);
+    const jadwal = data.jadwal || {};
+    const perusahaan = data.perusahaan || {};
+    
+    const companyInitial = perusahaan.nama_perusahaan ? perusahaan.nama_perusahaan.charAt(0).toUpperCase() : '?';
+    const companyLogo = perusahaan.logo 
+        ? `<img src="${perusahaan.logo}" alt="${escapeHtml(perusahaan.nama_perusahaan)}" onerror="this.parentElement.innerHTML='${companyInitial}'">`
+        : companyInitial;
+    
+    return `
+        <div class="detail-header">
+            <h2 class="detail-title">${escapeHtml(data.posisi)}</h2>
+            <div class="detail-company">
+                <div class="company-logo">${companyLogo}</div>
+                <div class="company-info">
+                    <h3>${escapeHtml(perusahaan.nama_perusahaan || 'N/A')}</h3>
+                    <p>📍 ${escapeHtml(perusahaan.nama_kabupaten || 'N/A')}, ${escapeHtml(perusahaan.nama_provinsi || 'N/A')}</p>
+                </div>
+            </div>
+            <div class="detail-badges">
+                <span class="detail-badge status ${isOpen ? '' : 'closed'}">${isOpen ? '✓ Pendaftaran Dibuka' : '✗ Pendaftaran Ditutup'}</span>
+                <span class="detail-badge angkatan">📅 Angkatan ${escapeHtml(jadwal.angkatan || 'N/A')} - ${escapeHtml(jadwal.tahun || 'N/A')}</span>
+            </div>
+        </div>
+        
+        <div class="detail-section">
+            <h4><span class="icon">📊</span> Informasi Kuota</h4>
+            <div class="info-grid">
+                <div class="info-card">
+                    <span class="icon">👥</span>
+                    <span class="value">${data.jumlah_kuota || 0}</span>
+                    <span class="label">Total Kuota</span>
+                </div>
+                <div class="info-card">
+                    <span class="icon">✅</span>
+                    <span class="value">${data.jumlah_terdaftar || 0}</span>
+                    <span class="label">Sudah Terdaftar</span>
+                </div>
+                <div class="info-card">
+                    <span class="icon">🎯</span>
+                    <span class="value">${(data.jumlah_kuota || 0) - (data.jumlah_terdaftar || 0)}</span>
+                    <span class="label">Sisa Kuota</span>
+                </div>
+                <div class="info-card">
+                    <span class="icon">📈</span>
+                    <span class="value">${data.jumlah_kuota > 0 ? Math.round((data.jumlah_terdaftar / data.jumlah_kuota) * 100) : 0}%</span>
+                    <span class="label">Terisi</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="detail-section">
+            <h4><span class="icon">📋</span> Deskripsi Posisi</h4>
+            <div class="detail-box">
+                <p>${escapeHtml(data.deskripsi_posisi || 'Tidak ada deskripsi')}</p>
+            </div>
+        </div>
+        
+        ${data.syarat_khusus ? `
+        <div class="detail-section">
+            <h4><span class="icon">📝</span> Syarat Khusus</h4>
+            <div class="detail-box">
+                <p>${escapeHtml(data.syarat_khusus)}</p>
+            </div>
+        </div>
+        ` : ''}
+        
+        <div class="detail-section">
+            <h4><span class="icon">🎓</span> Kualifikasi</h4>
+            <div class="detail-tags">
+                ${programStudi.map(ps => `<span class="detail-tag">${escapeHtml(ps.title)}</span>`).join('')}
+                ${jenjang.map(j => `<span class="detail-tag jenjang">${escapeHtml(j)}</span>`).join('')}
+            </div>
+            ${data.usia_minimal || data.usia_maksimal ? `
+            <div style="margin-top: 15px; color: #666;">
+                <strong>Usia:</strong> ${data.usia_minimal || '-'} - ${data.usia_maksimal || '-'} tahun
+            </div>
+            ` : ''}
+        </div>
+        
+        <div class="detail-section">
+            <h4><span class="icon">📅</span> Timeline Program</h4>
+            <div class="timeline">
+                ${createTimelineItem('📝', 'Pendaftaran', jadwal.tanggal_pendaftaran_awal, jadwal.tanggal_pendaftaran_akhir)}
+                ${createTimelineItem('🔍', 'Seleksi', jadwal.tanggal_seleksi_mulai, jadwal.tanggal_seleksi_akhir)}
+                ${createTimelineItem('📢', 'Pengumuman', jadwal.tanggal_pengumuman_mulai, jadwal.tanggal_pengumuman_akhir)}
+                ${createTimelineItem('🎓', 'Periode Magang', jadwal.tanggal_mulai, jadwal.tanggal_selesai)}
+            </div>
+        </div>
+        
+        <div class="detail-section">
+            <h4><span class="icon">🏢</span> Alamat Perusahaan</h4>
+            <div class="address-box">
+                <div class="icon">📍</div>
+                <div class="address-text">
+                    <p>${escapeHtml(perusahaan.alamat || 'Alamat tidak tersedia')}</p>
+                    <p class="location">${escapeHtml(perusahaan.nama_kabupaten || '')}, ${escapeHtml(perusahaan.nama_provinsi || '')}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="apply-section">
+            <a href="https://maganghub.kemnaker.go.id/lowongan/${data.id_posisi}" 
+               target="_blank" 
+               class="btn-apply ${isOpen ? '' : 'disabled'}"
+               ${isOpen ? '' : 'onclick="return false;"'}>
+                ${isOpen ? '🚀 Daftar Sekarang di MagangHub' : '⏳ Pendaftaran Belum Dibuka / Sudah Ditutup'}
+            </a>
+        </div>
+    `;
+}
+
+// Create Timeline Item
+function createTimelineItem(icon, title, startDate, endDate) {
+    const now = new Date();
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    
+    let status = '';
+    if (start && end) {
+        if (now < start) {
+            status = ''; // future
+        } else if (now >= start && now <= end) {
+            status = 'active'; // current
+        } else {
+            status = 'past'; // past
+        }
+    }
+    
+    return `
+        <div class="timeline-item ${status}">
+            <div class="timeline-icon">${icon}</div>
+            <div class="timeline-content">
+                <h5>${title}</h5>
+                <p>${formatDate(startDate)} - ${formatDate(endDate)}</p>
+            </div>
+        </div>
+    `;
 }
