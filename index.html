@@ -75,11 +75,20 @@
                 </div>
                 <div class="filter-group">
                     <label for="perPage">Tampilkan:</label>
-                    <select id="perPage">
-                        <option value="5">5 per halaman</option>
-                        <option value="10" selected>10 per halaman</option>
-                        <option value="20">20 per halaman</option>
-                    </select>
+                    <div class="per-page-wrapper">
+                        <select id="perPage" onchange="onPerPageChange()">
+                            <option value="5">5 per halaman</option>
+                            <option value="10" selected>10 per halaman</option>
+                            <option value="20">20 per halaman</option>
+                            <option value="50">50 per halaman</option>
+                            <option value="100">100 per halaman</option>
+                            <option value="custom">Custom...</option>
+                        </select>
+                        <div class="custom-per-page" id="customPerPage" style="display: none;">
+                            <input type="number" id="customPerPageInput" min="1" max="500" placeholder="1-500">
+                            <button onclick="applyCustomPerPage()">OK</button>
+                        </div>
+                    </div>
                 </div>
                 <button class="btn-search" onclick="searchVacancies()">🔍 Cari</button>
             </section>

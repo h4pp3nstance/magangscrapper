@@ -116,6 +116,47 @@ body {
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
+/* Custom Per Page */
+.per-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.custom-per-page {
+    display: flex;
+    gap: 8px;
+}
+
+.custom-per-page input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+}
+
+.custom-per-page input:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.custom-per-page button {
+    padding: 10px 16px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.custom-per-page button:hover {
+    background: #5a6fd6;
+}
+
 /* Stats */
 .stats {
     display: flex;

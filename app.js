@@ -6,6 +6,7 @@ const API_DETAIL_URL = 'https://maganghub.kemnaker.go.id/be/v1/api/read/vacancie
 let currentPage = 1;
 let totalPages = 1;
 let kabupatenCache = {}; // Cache cities by province
+let customPerPageValue = null; // Store custom per page value
 
 // DOM Elements
 const vacanciesContainer = document.getElementById('vacancies');
@@ -27,6 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
     keywordInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             searchVacancies();
+        }
+    });
+    
+    // Enter key on custom per page input
+    document.getElementById('customPerPageInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            applyCustomPerPage();
         }
     });
 });
@@ -100,6 +108,55 @@ function populateKabupatenSelect(kabupatenList) {
     });
 }
 
+// On Per Page Change
+function onPerPageChange() {
+    const value = perPageSelect.value;
+    const customPerPageDiv = document.getElementById('customPerPage');
+    
+    if (value === 'custom') {
+        customPerPageDiv.style.display = 'flex';
+        document.getElementById('customPerPageInput').focus();
+    } else {
+        customPerPageDiv.style.display = 'none';
+        customPerPageValue = null;
+    }
+}
+
+// Apply Custom Per Page
+function applyCustomPerPage() {
+    const input = document.getElementById('customPerPageInput');
+    let value = parseInt(input.value);
+    
+    // Validate
+    if (isNaN(value) || value < 1) {
+        value = 10;
+    } else if (value > 500) {
+        value = 500;
+    }
+    
+    customPerPageValue = value;
+    input.value = value;
+    
+    // Update select to show the custom value
+    const customOption = perPageSelect.querySelector('option[value="custom"]');
+    customOption.textContent = `${value} per halaman (Custom)`;
+    
+    // Trigger search
+    searchVacancies();
+}
+
+// Get Per Page Value
+function getPerPageValue() {
+    if (customPerPageValue !== null) {
+        return customPerPageValue;
+    }
+    const value = perPageSelect.value;
+    if (value === 'custom') {
+        return 10; // default fallback
+    }
+    return parseInt(value);
+}
+
 // Search Vacancies
 async function searchVacancies(page = 1) {
     currentPage = page;
@@ -108,7 +165,7 @@ async function searchVacancies(page = 1) {
     const provinsi = provinsiSelect.value;
     const kabupaten = kabupatenSelect.value;
     const keyword = keywordInput.value.trim();
-    const perPage = perPageSelect.value;
+    const perPage = getPerPageValue();
     
     const params = new URLSearchParams({
         order_by: 'jumlah_terdaftar',
