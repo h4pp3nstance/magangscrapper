@@ -295,7 +295,15 @@ async function openDetail(id) {
         
         const result = await response.json();
         modalLoading.style.display = 'none';
-        modalContent.innerHTML = createDetailContent(result.data);
+        
+        // Handle array response - data is returned as array with single item
+        const data = Array.isArray(result.data) ? result.data[0] : result.data;
+        
+        if (!data) {
+            throw new Error('No data found');
+        }
+        
+        modalContent.innerHTML = createDetailContent(data);
     } catch (error) {
         console.error('Error fetching detail:', error);
         modalLoading.style.display = 'none';
@@ -332,15 +340,24 @@ function createDetailContent(data) {
     const perusahaan = data.perusahaan || {};
     
     const companyInitial = perusahaan.nama_perusahaan ? perusahaan.nama_perusahaan.charAt(0).toUpperCase() : '?';
-    const companyLogo = perusahaan.logo 
-        ? `<img src="${perusahaan.logo}" alt="${escapeHtml(perusahaan.nama_perusahaan)}" onerror="this.parentElement.innerHTML='${companyInitial}'">`
-        : companyInitial;
+    const hasLogo = perusahaan.logo && perusahaan.logo.length > 0;
+    const hasBanner = perusahaan.banner && perusahaan.banner.length > 0;
     
     return `
-        <div class="detail-header">
+        ${hasBanner ? `
+        <div class="detail-banner">
+            <img src="${perusahaan.banner}" alt="Banner ${escapeHtml(perusahaan.nama_perusahaan)}" onerror="this.parentElement.style.display='none'">
+        </div>
+        ` : ''}
+        
+        <div class="detail-header ${hasBanner ? 'has-banner' : ''}">
             <h2 class="detail-title">${escapeHtml(data.posisi)}</h2>
             <div class="detail-company">
-                <div class="company-logo">${companyLogo}</div>
+                <div class="company-logo ${hasLogo ? 'has-image' : ''}">
+                    ${hasLogo 
+                        ? `<img src="${perusahaan.logo}" alt="${escapeHtml(perusahaan.nama_perusahaan)}" onerror="this.parentElement.innerHTML='${companyInitial}'; this.parentElement.classList.remove('has-image')">` 
+                        : companyInitial}
+                </div>
                 <div class="company-info">
                     <h3>${escapeHtml(perusahaan.nama_perusahaan || 'N/A')}</h3>
                     <p>📍 ${escapeHtml(perusahaan.nama_kabupaten || 'N/A')}, ${escapeHtml(perusahaan.nama_provinsi || 'N/A')}</p>
@@ -349,6 +366,7 @@ function createDetailContent(data) {
             <div class="detail-badges">
                 <span class="detail-badge status ${isOpen ? '' : 'closed'}">${isOpen ? '✓ Pendaftaran Dibuka' : '✗ Pendaftaran Ditutup'}</span>
                 <span class="detail-badge angkatan">📅 Angkatan ${escapeHtml(jadwal.angkatan || 'N/A')} - ${escapeHtml(jadwal.tahun || 'N/A')}</span>
+                ${data.ref_status_posisi?.nama_status_posisi ? `<span class="detail-badge verified">✓ ${escapeHtml(data.ref_status_posisi.nama_status_posisi)}</span>` : ''}
             </div>
         </div>
         
@@ -418,7 +436,12 @@ function createDetailContent(data) {
         </div>
         
         <div class="detail-section">
-            <h4><span class="icon">🏢</span> Alamat Perusahaan</h4>
+            <h4><span class="icon">🏢</span> Tentang Perusahaan</h4>
+            ${perusahaan.deskripsi_perusahaan ? `
+            <div class="detail-box" style="margin-bottom: 15px;">
+                <p>${escapeHtml(perusahaan.deskripsi_perusahaan)}</p>
+            </div>
+            ` : ''}
             <div class="address-box">
                 <div class="icon">📍</div>
                 <div class="address-text">
