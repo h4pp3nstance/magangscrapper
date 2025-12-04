@@ -25,7 +25,7 @@
             <section class="filters">
                 <div class="filter-group">
                     <label for="provinsi">Provinsi:</label>
-                    <select id="provinsi">
+                    <select id="provinsi" onchange="onProvinceChange()">
                         <option value="">Semua Provinsi</option>
                         <option value="11">ACEH</option>
                         <option value="12">SUMATERA UTARA</option>
@@ -61,6 +61,12 @@
                         <option value="82">MALUKU UTARA</option>
                         <option value="91">PAPUA</option>
                         <option value="92">PAPUA BARAT</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="kabupaten">Kota/Kabupaten:</label>
+                    <select id="kabupaten">
+                        <option value="">Semua Kota/Kabupaten</option>
                     </select>
                 </div>
                 <div class="filter-group">

@@ -56,7 +56,7 @@ body {
     padding: 25px;
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 15px;
     align-items: flex-end;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     margin-bottom: 25px;
@@ -64,7 +64,11 @@ body {
 
 .filter-group {
     flex: 1;
-    min-width: 200px;
+    min-width: 180px;
+}
+
+.filter-group.location {
+    min-width: 150px;
 }
 
 .filter-group label {

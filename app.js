@@ -5,6 +5,7 @@ const API_DETAIL_URL = 'https://maganghub.kemnaker.go.id/be/v1/api/read/vacancie
 // State
 let currentPage = 1;
 let totalPages = 1;
+let kabupatenCache = {}; // Cache cities by province
 
 // DOM Elements
 const vacanciesContainer = document.getElementById('vacancies');
@@ -12,11 +13,14 @@ const loadingElement = document.getElementById('loading');
 const errorElement = document.getElementById('error');
 const paginationElement = document.getElementById('pagination');
 const provinsiSelect = document.getElementById('provinsi');
+const kabupatenSelect = document.getElementById('kabupaten');
 const keywordInput = document.getElementById('keyword');
 const perPageSelect = document.getElementById('perPage');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    // Load cities for default province (Jawa Barat - 32)
+    loadKabupaten('32');
     searchVacancies();
     
     // Enter key on keyword input
@@ -27,12 +31,82 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// On Province Change
+function onProvinceChange() {
+    const provinsi = provinsiSelect.value;
+    kabupatenSelect.innerHTML = '<option value="">Semua Kota/Kabupaten</option>';
+    
+    if (provinsi) {
+        loadKabupaten(provinsi);
+    }
+}
+
+// Load Kabupaten for Province
+async function loadKabupaten(kodeProvinsi) {
+    // Check cache first
+    if (kabupatenCache[kodeProvinsi]) {
+        populateKabupatenSelect(kabupatenCache[kodeProvinsi]);
+        return;
+    }
+    
+    try {
+        // Fetch a larger sample to get all unique kabupaten
+        const params = new URLSearchParams({
+            order_by: 'jumlah_terdaftar',
+            order_direction: 'ASC',
+            page: 1,
+            limit: 500,
+            per_page: 500,
+            kode_provinsi: kodeProvinsi
+        });
+        
+        const response = await fetch(`${API_BASE_URL}?${params.toString()}`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch kabupaten');
+        }
+        
+        const result = await response.json();
+        
+        // Extract unique kabupaten
+        const kabupatenMap = new Map();
+        result.data.forEach(vacancy => {
+            if (vacancy.perusahaan?.kode_kabupaten && vacancy.perusahaan?.nama_kabupaten) {
+                kabupatenMap.set(vacancy.perusahaan.kode_kabupaten, vacancy.perusahaan.nama_kabupaten);
+            }
+        });
+        
+        // Convert to array and sort
+        const kabupatenList = Array.from(kabupatenMap, ([kode, nama]) => ({ kode, nama }))
+            .sort((a, b) => a.nama.localeCompare(b.nama));
+        
+        // Cache the result
+        kabupatenCache[kodeProvinsi] = kabupatenList;
+        
+        populateKabupatenSelect(kabupatenList);
+    } catch (error) {
+        console.error('Error loading kabupaten:', error);
+    }
+}
+
+// Populate Kabupaten Select
+function populateKabupatenSelect(kabupatenList) {
+    kabupatenSelect.innerHTML = '<option value="">Semua Kota/Kabupaten</option>';
+    kabupatenList.forEach(kab => {
+        const option = document.createElement('option');
+        option.value = kab.kode;
+        option.textContent = kab.nama;
+        kabupatenSelect.appendChild(option);
+    });
+}
+
 // Search Vacancies
 async function searchVacancies(page = 1) {
     currentPage = page;
     showLoading();
     
     const provinsi = provinsiSelect.value;
+    const kabupaten = kabupatenSelect.value;
     const keyword = keywordInput.value.trim();
     const perPage = perPageSelect.value;
     
@@ -47,6 +121,10 @@ async function searchVacancies(page = 1) {
     
     if (provinsi) {
         params.append('kode_provinsi', provinsi);
+    }
+    
+    if (kabupaten) {
+        params.append('kode_kabupaten', kabupaten);
     }
     
     try {
