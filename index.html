@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagangHub - Lowongan Magang</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">🎓 MagangHub</h1>
+                <p class="tagline">Portal Lowongan Magang Indonesia</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Filters Section -->
+            <section class="filters">
+                <div class="filter-group">
+                    <label for="provinsi">Provinsi:</label>
+                    <select id="provinsi">
+                        <option value="">Semua Provinsi</option>
+                        <option value="11">ACEH</option>
+                        <option value="12">SUMATERA UTARA</option>
+                        <option value="13">SUMATERA BARAT</option>
+                        <option value="14">RIAU</option>
+                        <option value="15">JAMBI</option>
+                        <option value="16">SUMATERA SELATAN</option>
+                        <option value="17">BENGKULU</option>
+                        <option value="18">LAMPUNG</option>
+                        <option value="19">KEPULAUAN BANGKA BELITUNG</option>
+                        <option value="21">KEPULAUAN RIAU</option>
+                        <option value="31">DKI JAKARTA</option>
+                        <option value="32" selected>JAWA BARAT</option>
+                        <option value="33">JAWA TENGAH</option>
+                        <option value="34">DI YOGYAKARTA</option>
+                        <option value="35">JAWA TIMUR</option>
+                        <option value="36">BANTEN</option>
+                        <option value="51">BALI</option>
+                        <option value="52">NUSA TENGGARA BARAT</option>
+                        <option value="53">NUSA TENGGARA TIMUR</option>
+                        <option value="61">KALIMANTAN BARAT</option>
+                        <option value="62">KALIMANTAN TENGAH</option>
+                        <option value="63">KALIMANTAN SELATAN</option>
+                        <option value="64">KALIMANTAN TIMUR</option>
+                        <option value="65">KALIMANTAN UTARA</option>
+                        <option value="71">SULAWESI UTARA</option>
+                        <option value="72">SULAWESI TENGAH</option>
+                        <option value="73">SULAWESI SELATAN</option>
+                        <option value="74">SULAWESI TENGGARA</option>
+                        <option value="75">GORONTALO</option>
+                        <option value="76">SULAWESI BARAT</option>
+                        <option value="81">MALUKU</option>
+                        <option value="82">MALUKU UTARA</option>
+                        <option value="91">PAPUA</option>
+                        <option value="92">PAPUA BARAT</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="keyword">Cari Posisi:</label>
+                    <input type="text" id="keyword" placeholder="Contoh: IT, Marketing, HR...">
+                </div>
+                <div class="filter-group">
+                    <label for="perPage">Tampilkan:</label>
+                    <select id="perPage">
+                        <option value="5">5 per halaman</option>
+                        <option value="10" selected>10 per halaman</option>
+                        <option value="20">20 per halaman</option>
+                    </select>
+                </div>
+                <button class="btn-search" onclick="searchVacancies()">🔍 Cari</button>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="stats" id="stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalVacancies">-</span>
+                    <span class="stat-label">Total Lowongan</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="currentPage">-</span>
+                    <span class="stat-label">Halaman</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalPages">-</span>
+                    <span class="stat-label">Total Halaman</span>
+                </div>
+            </section>
+
+            <!-- Loading Indicator -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Memuat data lowongan...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error" id="error" style="display: none;">
+                <p>⚠️ Gagal memuat data. Silakan coba lagi.</p>
+                <button class="btn-retry" onclick="searchVacancies()">Coba Lagi</button>
+            </div>
+
+            <!-- Vacancies List -->
+            <section class="vacancies" id="vacancies"></section>
+
+            <!-- Pagination -->
+            <section class="pagination" id="pagination"></section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Data dari <a href="https://maganghub.kemnaker.go.id" target="_blank">MagangHub Kemnaker</a></p>
+            <p>© 2025 - Aplikasi Pencarian Lowongan Magang</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
