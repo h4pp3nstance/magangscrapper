@@ -17,6 +17,7 @@ const provinsiSelect = document.getElementById('provinsi');
 const kabupatenSelect = document.getElementById('kabupaten');
 const keywordInput = document.getElementById('keyword');
 const perPageSelect = document.getElementById('perPage');
+const availabilityFilter = document.getElementById('availabilityFilter');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -192,8 +193,31 @@ async function searchVacancies(page = 1) {
         }
         
         const result = await response.json();
-        displayVacancies(result.data);
-        updateStats(result.meta.pagination);
+        
+        // Apply availability filter (client-side)
+        const availability = availabilityFilter.value;
+        let filteredData = result.data;
+        
+        if (availability === 'empty') {
+            // Only show vacancies with 0 applicants
+            filteredData = result.data.filter(v => (v.jumlah_terdaftar || 0) === 0);
+        } else if (availability === 'available') {
+            // Show vacancies where applicants < quota
+            filteredData = result.data.filter(v => (v.jumlah_terdaftar || 0) < (v.jumlah_kuota || 0));
+        } else if (availability === 'full') {
+            // Show vacancies where applicants >= quota
+            filteredData = result.data.filter(v => (v.jumlah_terdaftar || 0) >= (v.jumlah_kuota || 0));
+        }
+        
+        displayVacancies(filteredData);
+        
+        // Update stats with filtered count info
+        const filteredPagination = {
+            ...result.meta.pagination,
+            filtered_count: filteredData.length,
+            original_count: result.data.length
+        };
+        updateStats(filteredPagination);
         renderPagination(result.meta.pagination);
         hideLoading();
     } catch (error) {
@@ -288,6 +312,12 @@ function updateStats(pagination) {
     document.getElementById('currentPage').textContent = pagination.current_page;
     document.getElementById('totalPages').textContent = pagination.last_page;
     totalPages = pagination.last_page;
+    
+    // Show filtered count if available
+    if (pagination.filtered_count !== undefined && pagination.filtered_count !== pagination.original_count) {
+        document.getElementById('totalVacancies').innerHTML = 
+            `<span style="font-size: 0.7em; color: #888;">Ditampilkan:</span><br>${pagination.filtered_count} <span style="font-size: 0.6em; color: #888;">/ ${pagination.original_count}</span>`;
+    }
 }
 
 // Render Pagination

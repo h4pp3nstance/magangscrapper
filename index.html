@@ -74,6 +74,15 @@
                     <input type="text" id="keyword" placeholder="Contoh: IT, Marketing, HR...">
                 </div>
                 <div class="filter-group">
+                    <label for="availabilityFilter">Status Kuota:</label>
+                    <select id="availabilityFilter">
+                        <option value="">Semua</option>
+                        <option value="empty" selected>Belum ada pelamar (0)</option>
+                        <option value="available">Masih tersedia (< kuota)</option>
+                        <option value="full">Sudah penuh</option>
+                    </select>
+                </div>
+                <div class="filter-group">
                     <label for="perPage">Tampilkan:</label>
                     <div class="per-page-wrapper">
                         <select id="perPage" onchange="onPerPageChange()">
